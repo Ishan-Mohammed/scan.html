@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sliding Puzzle Challenge</title> 
+    <style>
+        body { text-align: center; font-family: Arial, sans-serif; }
+        .puzzle-container { width: 300px; height: 300px; display: grid; grid-template-columns: repeat(3, 1fr); margin: auto; }
+        .tile { width: 100px; height: 100px; border: 1px solid #000; background-size: 300px 300px; cursor: pointer; }
+        .empty { background: none; border: none; }
+        .celebration-container {
+            display: none;
+            margin-top: 20px;
+        }
+        .celebration-container img {
+            width: 150px; /* Adjusted size */
+            height: auto;
+        }
+        .message {
+            display: none;
+            font-size: 22px;
+            font-weight: bold;
+            color: green;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h2>Sliding Puzzle Challenge</h2>
+    <h3>Guys ready for your challenge to unlock the next mystery door....Here you gooo<br>
+        This is the image of a famous personality.<br>
+        Solve this sliding puzzle and get your code to the next mystery.
+    </h3>
+    
+    <div class="puzzle-container" id="puzzle"></div>
+    
+    <!-- Celebration GIF Below the Solved Puzzle -->
+    <div class="celebration-container" id="celebration-container">
+        <img src="https://media.giphy.com/media/3o7abKhOpu0NwenH3O/giphy.gif" alt="Celebration">
+        <div class="message" id="message">Great! You have done it!</div>
+    </div>
+
+    <script>
+        const rows = 3, cols = 3;
+        let puzzle = document.getElementById("puzzle");
+        let tiles = [];
+        const imageUrl = "resize-17424879731639283464timcook.jpg";
+        
+        function createTiles() {
+            let numbers = [...Array(rows * cols).keys()];
+            numbers.sort(() => Math.random() - 0.5);
+            
+            numbers.forEach((num, index) => {
+                let tile = document.createElement("div");
+                tile.classList.add("tile");
+                if (num !== rows * cols - 1) {
+                    let x = (num % cols) * -100;
+                    let y = Math.floor(num / cols) * -100;
+                    tile.style.backgroundImage = `url('${imageUrl}')`;
+                    tile.style.backgroundPosition = `${x}px ${y}px`;
+                } else {
+                    tile.classList.add("empty");
+                }
+                tile.dataset.index = num;
+                tile.addEventListener("click", moveTile);
+                puzzle.appendChild(tile);
+                tiles.push(tile);
+            });
+        }
+        
+        function moveTile(event) {
+            let tile = event.target;
+            let emptyTile = document.querySelector(".empty");
+            let tileIndex = tiles.indexOf(tile);
+            let emptyIndex = tiles.indexOf(emptyTile);
+            
+            let validMoves = [emptyIndex - 1, emptyIndex + 1, emptyIndex - cols, emptyIndex + cols];
+            if (validMoves.includes(tileIndex)) {
+                [tiles[tileIndex], tiles[emptyIndex]] = [tiles[emptyIndex], tiles[tileIndex]];
+                puzzle.innerHTML = "";
+                tiles.forEach(tile => puzzle.appendChild(tile));
+            }
+            
+            checkWin();
+        }
+        
+        function checkWin() {
+            let isSolved = tiles.every((tile, index) => tile.dataset.index == index);
+            if (isSolved) {
+                document.getElementById("celebration-container").style.display = "block";
+            }
+        }
+        
+        createTiles();
+    </script>
+</body>
+</html>
+
